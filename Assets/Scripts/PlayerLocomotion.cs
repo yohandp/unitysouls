@@ -33,6 +33,7 @@ namespace YS{
         #region Movement
         Vector3 normalVector;
         Vector3 targetPosition;
+
         private void HandleRotation(float delta){
             Vector3 targetDir = Vector3.zero;
             float moveOverride = inputHandler.moveAmount;
@@ -54,13 +55,8 @@ namespace YS{
 
             myTransform.rotation = targetRotation;
         }
-        #endregion
 
-        public void Update(){
-            float delta = Time.deltaTime;
-
-            inputHandler.TickInput(delta);
-
+        public void HandleMovement(float delta){    
             moveDirection = cameraObject.forward * inputHandler.vertical;
             moveDirection += cameraObject.right * inputHandler.horizontal;
             moveDirection.Normalize();
@@ -77,6 +73,36 @@ namespace YS{
             if(animatorHandler.canRotate){
                 HandleRotation(delta);
             }
+        }
+        
+        public void HandleRollingAndSprinting(float delta){
+            if(animatorHandler.anim.GetBool("isInteracting")){
+                return;
+            }
+
+            if(inputHandler.rollFlag){
+                moveDirection = cameraObject.forward * inputHandler.vertical;
+                moveDirection += cameraObject.right * inputHandler.horizontal;
+                
+                if(inputHandler.moveAmount>0){
+                    animatorHandler.PlayTargetAnimation("Roll", true);
+                    moveDirection.y = 0;
+                    Quaternion rollRotation = Quaternion.LookRotation(moveDirection);
+                    myTransform.rotation = rollRotation;
+                }else{
+                    animatorHandler.PlayTargetAnimation("Backstep", true);
+                }
+            }
+        }
+
+        #endregion
+
+        public void Update(){
+            float delta = Time.deltaTime;
+
+            inputHandler.TickInput(delta);
+            HandleMovement(delta);
+            HandleRollingAndSprinting(delta);
         }
     }
 
