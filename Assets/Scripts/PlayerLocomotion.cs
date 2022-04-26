@@ -8,6 +8,7 @@ namespace YS{
         Transform cameraObject;
         InputHandler inputHandler;
         Vector3 moveDirection;
+        PlayerManager playerManager;
 
         [HideInInspector]
         public Transform myTransform;
@@ -16,7 +17,7 @@ namespace YS{
         public new Rigidbody rigidbody;
         public GameObject normalCamera;
 
-        [Header("Stats")]
+        [Header("Movement Stats")]
         [SerializeField]
         float moveSpeed = 5;
         [SerializeField]
@@ -24,13 +25,12 @@ namespace YS{
         [SerializeField]
         float rotationSpeed = 10;
 
-        public bool isSprinting;
-
         void Start()
         {
             rigidbody = GetComponent<Rigidbody>();
             inputHandler = GetComponent<InputHandler>();
             animatorHandler = GetComponentInChildren<AnimatorHandler>();
+            playerManager = GetComponentInParent<PlayerManager>();
             cameraObject = Camera.main.transform;
             myTransform = transform;
             animatorHandler.Initialize();
@@ -77,7 +77,7 @@ namespace YS{
 
             if(inputHandler.sprintFlag){
                 speed = sprintSpeed;
-                isSprinting = true;
+                playerManager.isSprinting = true;
                 moveDirection *= speed;
             }else{
                 moveDirection *= speed;
@@ -86,7 +86,7 @@ namespace YS{
             Vector3 projectedVelocity = Vector3.ProjectOnPlane(moveDirection, normalVector);
             rigidbody.velocity = projectedVelocity;
 
-            animatorHandler.UpdateAnimatorValues(inputHandler.moveAmount, 0, isSprinting);
+            animatorHandler.UpdateAnimatorValues(inputHandler.moveAmount, 0, playerManager.isSprinting);
 
             if(animatorHandler.canRotate){
                 HandleRotation(delta);
@@ -114,15 +114,6 @@ namespace YS{
         }
 
         #endregion
-
-        public void Update(){
-            float delta = Time.deltaTime;
-
-            isSprinting = inputHandler.b_Input;
-            inputHandler.TickInput(delta);
-            HandleMovement(delta);
-            HandleRollingAndSprinting(delta);
-        }
     }
 
 }

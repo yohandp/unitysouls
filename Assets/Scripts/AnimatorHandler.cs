@@ -5,9 +5,10 @@ using UnityEngine;
 namespace YS{
     public class AnimatorHandler : MonoBehaviour
     {
+        InputHandler inputHandler;
+        PlayerLocomotion playerLocomotion;
         public Animator anim;
-        public InputHandler inputHandler;
-        public PlayerLocomotion playerLocomotion;
+        public PlayerManager playerManager;
         int vertical;
         int horizontal;
         public bool canRotate;
@@ -18,6 +19,7 @@ namespace YS{
             playerLocomotion = GetComponentInParent<PlayerLocomotion>();
             vertical = Animator.StringToHash("Vertical");
             horizontal = Animator.StringToHash("Horizontal");
+            playerManager = GetComponentInParent<PlayerManager>();
         }
 
         public void UpdateAnimatorValues(float verticalMovement, float horizontalMovement, bool isSprinting){
@@ -75,7 +77,7 @@ namespace YS{
         }
 
         private void OnAnimatorMove(){
-            if(inputHandler.isInteracting == false){
+            if(playerManager.isInteracting == false){
                 return;
             }
             float delta = Time.deltaTime;
