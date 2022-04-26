@@ -20,7 +20,7 @@ namespace YS{
             horizontal = Animator.StringToHash("Horizontal");
         }
 
-        public void UpdateAnimatorValues(float verticalMovement, float horizontalMovement){
+        public void UpdateAnimatorValues(float verticalMovement, float horizontalMovement, bool isSprinting){
             #region Vertical
             float v = 0;
             if(verticalMovement >0 && verticalMovement < 0.55f){
@@ -49,6 +49,12 @@ namespace YS{
                 h = 0;
             }
             #endregion
+
+            if (isSprinting)
+            {
+                v = 2;
+                h = horizontalMovement;
+            }
 
             anim.SetFloat(vertical, v, 0.1f, Time.deltaTime);
             anim.SetFloat(horizontal, h, 0.1f, Time.deltaTime);
